@@ -25,6 +25,12 @@ public class App
     private JButton searchButton;
 
     public App(){
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
         frame = new JFrame();
         frame.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         frame.add(createInputPanel());
