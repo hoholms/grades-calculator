@@ -23,7 +23,7 @@ public class Window extends JFrame {
     /**
      * List of all subjects.
      */
-    List<Subject> subjects = new ArrayList<>();
+    List<Subject> subjects;
 
     /**
      * The Global grade label.
@@ -40,10 +40,10 @@ public class Window extends JFrame {
             System.out.println(ex.getMessage());
         }
 
-        //App app = new App();
-        //Document document = app.handleWebPage();
-
         subjects = HTMLParser.parseSubjects(document, -1);
+        subjects.removeIf(el -> el.getNameSub().equals("Bolnav") ||
+                el.getNameSub().equals("Motivate") ||
+                el.getNameSub().equals("Nemotivate") || el.getGrades().isEmpty());
 
         setTitle("Grades accounting");
         ImageIcon logo = new ImageIcon("img/logo.png");
@@ -58,14 +58,12 @@ public class Window extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 int confirmed = JOptionPane.showConfirmDialog(null,
-                        "Save changes?", "Exit Program Message Box",
-                        JOptionPane.YES_NO_CANCEL_OPTION);
+                        "Exit Program", "Exit Program Message Box",
+                        JOptionPane.OK_CANCEL_OPTION);
 
-                if (confirmed == JOptionPane.YES_OPTION) {
-                    writeData();
+                if (confirmed == JOptionPane.OK_OPTION) {
                     dispose();
-                } else if (confirmed == JOptionPane.NO_OPTION)
-                    dispose();
+                }
             }
         });
 
@@ -106,6 +104,7 @@ public class Window extends JFrame {
                 subjPanels.updateUI();
             }
         });
+        plus.setEnabled(false);
         bottomPanel.add(plus, BorderLayout.WEST);
 
         globalGradeLabel = new JLabel("GPA: " + new DecimalFormat("#0.00").format(globalGrade(subjects)));
@@ -183,10 +182,14 @@ public class Window extends JFrame {
         namePanel.add(sName);
 
         JButton sPlus = new JButton("+"), sMinus = new JButton("-");
+
         sPlus.setPreferredSize(new Dimension(25, 25));
         sPlus.setMargin(new Insets(5, 5, 5, 5));
+        sPlus.setEnabled(false);
+
         sMinus.setPreferredSize(new Dimension(25, 25));
         sMinus.setMargin(new Insets(5, 5, 5, 5));
+        sMinus.setEnabled(false);
 
         sPlus.addActionListener(e -> {
             subj.getGrades().add(null);
@@ -280,6 +283,11 @@ public class Window extends JFrame {
             exTf.setEditable(e.getStateChange() == ItemEvent.SELECTED);
             subj.setExam(e.getStateChange() == ItemEvent.SELECTED);
             if (e.getStateChange() == ItemEvent.SELECTED) {
+                if (exTf.getText().length() > 0) {
+                    subj.setExGrade(Integer.parseInt(exTf.getText()));
+                } else {
+                    subj.setExGrade(0);
+                }
                 subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgExGrade()));
             } else
                 subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgGrade()));
@@ -303,6 +311,7 @@ public class Window extends JFrame {
      */
     private JTextField addGradeTf(Subject subj, int ind, JLabel subjAvg) {
         JTextField tf = new JTextField();
+        tf.setEditable(false);
         if (subj.getGrades().get(ind) != null)
             tf.setText("" + subj.getGrades().get(ind));
         tf.setPreferredSize(new Dimension(30, 30));
@@ -363,36 +372,5 @@ public class Window extends JFrame {
                 avg += sbj.avgExGrade();
         }
         return avg / subjects.size();
-    }
-
-    private void readData() {
-        try {
-            FileInputStream fileInputStream = new FileInputStream("subjectsData.ser");
-            ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
-
-            subjects = (Vector<Subject>) objectInputStream.readObject();
-            objectInputStream.close();
-            fileInputStream.close();
-        } catch (IOException | ClassNotFoundException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    private void writeData() {
-        try {
-            FileOutputStream outputStream = new FileOutputStream("subjectsData.ser");
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-
-            objectOutputStream.writeObject(subjects);
-            objectOutputStream.close();
-            outputStream.close();
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
-
-    private long getIDNP() {
-        return Long.parseLong(JOptionPane.showInputDialog(null,
-                "Enter IDNP:", "Welcome input dialog"));
     }
 }
