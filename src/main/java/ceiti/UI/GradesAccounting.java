@@ -3,7 +3,7 @@ package ceiti.UI;
 /**
  * GradesAccounting class is a class that only creates a new window.
  */
-public class GradesAcoounting {
+public class GradesAccounting {
     /**
      * Method main does the main code.
      *
