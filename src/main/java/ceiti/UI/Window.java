@@ -2,8 +2,6 @@ package ceiti.UI;
 
 import ceiti.model.Subject;
 import ceiti.parser.http.HTMLParser;
-import ceiti.parser.testresponse.TestResponse;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import javax.swing.*;
@@ -281,7 +279,6 @@ public class Window extends JFrame {
         exCheckbox.addItemListener(e -> {
             exTf.setEditable(e.getStateChange() == ItemEvent.SELECTED);
             subj.setExam(e.getStateChange() == ItemEvent.SELECTED);
-            subj.setExGrade();
             if (e.getStateChange() == ItemEvent.SELECTED) {
                 subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgExGrade()));
             } else
