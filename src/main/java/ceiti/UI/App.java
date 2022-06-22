@@ -1,9 +1,6 @@
 package ceiti.UI;
 
 import ceiti.parser.http.HTTPHandler;
-import okhttp3.Response;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -98,21 +95,6 @@ public class App
         return inputPanel;
     }
 
-    public Document handleWebPage(){
-        frame.dispose();
-
-        Response response = HTTPHandler.getLastResponse();
-        try{
-            String responseBody = response.body().string();
-            Document document = Jsoup.parse(responseBody);
-            return document;
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-
-        return null;
-    }
 
     public void onInputButtonClick(ActionEvent e) {
         String idnp = textField.getText();
@@ -120,7 +102,8 @@ public class App
         try {
             HTTPHandler.ResponseCode code = HTTPHandler.getHTMLDocument(idnp);
             if (code == HTTPHandler.ResponseCode.SUCCESS) {
-                new Window(handleWebPage());
+                frame.dispose();
+                new Window(HTTPHandler.getResponseDocument());
             } else {
                 JOptionPane.showMessageDialog(null, "An error has happened while receiving a response", "Response error", JOptionPane.PLAIN_MESSAGE);
             }
@@ -128,6 +111,5 @@ public class App
             JOptionPane.showMessageDialog(null, "An error has happened while sending a request", "Request error", JOptionPane.PLAIN_MESSAGE);
             ex.printStackTrace();
         }
-
     }
 }

@@ -1,10 +1,12 @@
 package ceiti.parser.http;
 
-import java.util.*;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class HTTPHandler {
@@ -14,7 +16,7 @@ public class HTTPHandler {
         TIMEOUT, //TODO add timeout verification
         WRONG_INPUT
     }
-    private static Response lastResponse;
+    private static Document responseDocument;
     public static ResponseCode getHTMLDocument(@NotNull String idnp) throws  IOException{
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .connectTimeout(8000, TimeUnit.MILLISECONDS)
@@ -33,6 +35,7 @@ public class HTTPHandler {
 
         Response cookieResponse = client.newCall(cookieRequest).execute();
 
+
         if(cookieResponse.networkResponse().code() != 302) return ResponseCode.WRONG_INPUT;
 
         List<String> cookies = cookieResponse.headers("Set-Cookie");
@@ -46,14 +49,15 @@ public class HTTPHandler {
                 .build();
 
 
-        lastResponse = client.newCall(gradesRequest).execute();
+        Response lastResponse = client.newCall(gradesRequest).execute();
         if (lastResponse.networkResponse().code() != 200) return ResponseCode.WRONG_INPUT;
 
+        responseDocument = Jsoup.parse(lastResponse.body().string());
         return ResponseCode.SUCCESS;
     }
 
-    public static Response getLastResponse(){
-        return lastResponse;
+    public static Document getResponseDocument(){
+        return responseDocument;
     }
 
 }

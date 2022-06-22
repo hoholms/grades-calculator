@@ -154,6 +154,7 @@ public class Subject implements Serializable {
      * @param exGrade the ex grade
      */
     public void setExGrade(Integer exGrade) {
+        setExam(true);
         this.exGrade = exGrade;
     }
 

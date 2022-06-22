@@ -1,17 +1,15 @@
 package ceiti.parser.http;
 
-import ceiti.model.MySubject;
-
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import ceiti.model.Subject;
 import org.jetbrains.annotations.NotNull;
-
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class HTMLParser {
@@ -31,7 +29,6 @@ public class HTMLParser {
                 List<Integer> gradesList = Arrays.stream(parseGrades(grades))
                         .boxed()
                         .toList();
-
 
                 Subject subject = new Subject(subjectName, gradesList);
 
