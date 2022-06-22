@@ -2,8 +2,6 @@ package ceiti.UI;
 
 import ceiti.model.Subject;
 import ceiti.parser.http.HTMLParser;
-import ceiti.parser.testresponse.TestResponse;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import javax.swing.*;
