@@ -6,10 +6,9 @@ import org.jsoup.nodes.Document;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -42,11 +41,11 @@ public class Window extends JFrame {
                 el.getNameSub().equals("Motivate") ||
                 el.getNameSub().equals("Nemotivate") || el.getGrades().isEmpty());
 
-        setTitle("Grades accounting");
+        setTitle("CEITI grades calculator");
         ImageIcon logo = new ImageIcon("src/main/resources/img/logo.png");
         setIconImage(logo.getImage());
         setSize(new Dimension(1000, 600));
-        setMinimumSize(new Dimension(640, 480));
+        setMinimumSize(new Dimension(820, 615));
         setResizable(true);
         setComponents();
 
@@ -73,38 +72,17 @@ public class Window extends JFrame {
 
         subjPanels.setLayout(new BoxLayout(subjPanels, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(subjPanels,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         for (Subject sbj : subjects)
-            subjPanels.add(addSubjPanel(sbj, subjPanels));
+            subjPanels.add(addSubjPanel(sbj));
 
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new BorderLayout());
         bottomPanel.setBorder(BorderFactory.createEtchedBorder());
-        bottomPanel.setPreferredSize(new Dimension(800, 25));
-
-        JButton plus = new JButton("Add Subject");
-        plus.setMargin(new Insets(5, 5, 5, 5));
-        plus.addActionListener(e -> {
-            String result = (String) JOptionPane.showInputDialog(
-                    subjPanels,
-                    "Subject name",
-                    "New Subject",
-                    JOptionPane.PLAIN_MESSAGE,
-                    null,
-                    null,
-                    "");
-            if (result != null && result.length() > 0) {
-                subjects.add(new Subject(result));
-                subjPanels.add(addSubjPanel(subjects.get(subjects.size()-1), subjPanels));
-                subjPanels.updateUI();
-            }
-        });
-        plus.setEnabled(false);
-        bottomPanel.add(plus, BorderLayout.WEST);
 
         globalGradeLabel = new JLabel("GPA: " + new DecimalFormat("#0.00").format(globalGrade(subjects)));
+        globalGradeLabel.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 16));
         globalGradeLabel.setHorizontalAlignment(JLabel.CENTER);
         globalGradeLabel.setVerticalAlignment(JLabel.CENTER);
         bottomPanel.add(globalGradeLabel, BorderLayout.EAST);
@@ -116,14 +94,12 @@ public class Window extends JFrame {
     /**
      * Adding a new panel to subjects panel.
      *
-     * @param subj       the subject
-     * @param subjPanels the subjects panel
+     * @param subj the subject
      * @return the new subject panel
      */
-    public JPanel addSubjPanel(Subject subj, JPanel subjPanels) {
+    public JPanel addSubjPanel(Subject subj) {
         JPanel subjPanel = new JPanel();
         subjPanel.setPreferredSize(new Dimension(800, 60));
-        subjPanel.setMinimumSize(new Dimension(640, 60));
         subjPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
         subjPanel.setLayout(new BorderLayout());
         subjPanel.setBorder(BorderFactory.createEtchedBorder());
@@ -132,15 +108,16 @@ public class Window extends JFrame {
 
         JPanel gradesPanel = new JPanel();
         gradesPanel.setLayout(new BoxLayout(gradesPanel, BoxLayout.X_AXIS));
+        gradesPanel.setMinimumSize(new Dimension(20, 60));
         for (int el : subj.getGrades()) {
             gradesPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-            gradesPanel.add(addGradeTf(subj, subj.getGrades().indexOf(el), subjAvg));
+            gradesPanel.add(addGradeTf(subj, subj.getGrades().indexOf(el)));
         }
         JScrollPane scrollGrades = new JScrollPane(gradesPanel, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
-                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         subjPanel.add(scrollGrades, BorderLayout.CENTER);
 
-        subjPanel.add(setSubjNamePanel(subj, gradesPanel, subjAvg, subjPanels, subjPanel), BorderLayout.WEST);
+        subjPanel.add(setSubjNamePanel(subj), BorderLayout.WEST);
         subjPanel.add(setSubjGlobalGradePanel(subj, subjAvg), BorderLayout.EAST);
 
         return subjPanel;
@@ -150,67 +127,15 @@ public class Window extends JFrame {
      * Creates panel with delete button, title of subject and "+" "-" buttons for grades
      *
      * @param subj the subject
-     * @param gradesPanel the grades panel
-     * @param subjAvg the subject average grade
-     * @param subjPanels the subjects panel
-     * @param subjPanel the parent subject panel
      * @return the name panel
      */
-    private JPanel setSubjNamePanel(Subject subj,
-                                    JPanel gradesPanel,
-                                    JLabel subjAvg,
-                                    JPanel subjPanels, JPanel subjPanel) {
+    private JPanel setSubjNamePanel(Subject subj) {
         JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 
-        JButton deleteButton = new JButton("×");
-        deleteButton.setPreferredSize(new Dimension(25, 25));
-        deleteButton.setMargin(new Insets(5, 5, 5, 5));
-        deleteButton.addActionListener(e -> {
-            subjPanels.remove(subjPanel);
-            subjects.remove(subj);
-            globalGradeLabel.setText("GPA: " + new DecimalFormat("#0.00").format(globalGrade(subjects)));
-            subjPanels.updateUI();
-        });
-        namePanel.add(deleteButton);
-
-        JLabel sName = new JLabel(subj.getNameSub());
-        sName.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 14));
-        sName.setPreferredSize(new Dimension(100, 25));
-        namePanel.add(sName);
-
-        JButton sPlus = new JButton("+"), sMinus = new JButton("-");
-
-        sPlus.setPreferredSize(new Dimension(25, 25));
-        sPlus.setMargin(new Insets(5, 5, 5, 5));
-        sPlus.setEnabled(false);
-
-        sMinus.setPreferredSize(new Dimension(25, 25));
-        sMinus.setMargin(new Insets(5, 5, 5, 5));
-        sMinus.setEnabled(false);
-
-        sPlus.addActionListener(e -> {
-            subj.getGrades().add(null);
-            gradesPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-            gradesPanel.add(addGradeTf(subj, subj.getGrades().size() - 1, subjAvg));
-            gradesPanel.updateUI();
-        });
-
-        sMinus.addActionListener(e -> {
-            if (!subj.getGrades().isEmpty()) {
-                gradesPanel.remove(gradesPanel.getComponents().length - 1);
-                gradesPanel.remove(gradesPanel.getComponents().length - 1);
-                subj.getGrades().remove(subj.getGrades().size() - 1);
-                gradesPanel.updateUI();
-                if (!subj.isExam())
-                    subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgGrade()));
-                else
-                    subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgExGrade()));
-                globalGradeLabel.setText("GPA: " + new DecimalFormat("#0.00").format(globalGrade(subjects)));
-            }
-        });
-
-        namePanel.add(sPlus);
-        namePanel.add(sMinus);
+        JLabel nameLabel = new JLabel(subj.getNameSub());
+        nameLabel.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 12));
+        nameLabel.setPreferredSize(new Dimension(200, 25));
+        namePanel.add(nameLabel);
 
         return namePanel;
     }
@@ -218,7 +143,7 @@ public class Window extends JFrame {
     /**
      * Creates panel with exam grade text field and average grade label for subject panel
      *
-     * @param subj the subject
+     * @param subj    the subject
      * @param subjAvg the subject average grade
      * @return the global grade panel
      */
@@ -235,61 +160,21 @@ public class Window extends JFrame {
         subjAvg.setVerticalAlignment(JLabel.CENTER);
 
         JTextField exTf = new JTextField();
+        exTf.setEditable(false);
         if (subj.isExam()) {
-            exTf.setEditable(true);
             exTf.setText("" + subj.getExGrade());
         } else {
-            exTf.setEditable(false);
             if (subj.getExGrade() != null && subj.getExGrade() != 0) {
                 exTf.setText("" + subj.getExGrade());
             }
         }
         exTf.setPreferredSize(new Dimension(30, 30));
-        makeTfForGrades(exTf);
-        exTf.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                warn();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                warn();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                warn();
-            }
-
-            public void warn() {
-                if (exTf.getText().length() > 0 && exTf.getText() != null)
-                    subj.setExGrade(Integer.parseInt(exTf.getText()));
-                else
-                    subj.setExGrade(0);
-                subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgExGrade()));
-                globalGradeLabel.setText("GPA: " + new DecimalFormat("#0.00").format(globalGrade(subjects)));
-            }
-        });
 
         JCheckBox exCheckbox = new JCheckBox();
+        exCheckbox.setEnabled(false);
         exCheckbox.setText("Exam: ");
         if (subj.isExam())
             exCheckbox.setSelected(true);
-        exCheckbox.addItemListener(e -> {
-            exTf.setEditable(e.getStateChange() == ItemEvent.SELECTED);
-            subj.setExam(e.getStateChange() == ItemEvent.SELECTED);
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                if (exTf.getText().length() > 0) {
-                    subj.setExGrade(Integer.parseInt(exTf.getText()));
-                } else {
-                    subj.setExGrade(0);
-                }
-                subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgExGrade()));
-            } else
-                subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgGrade()));
-            globalGradeLabel.setText("GPA: " + new DecimalFormat("#0.00").format(globalGrade(subjects)));
-        });
 
         subjGrade.add(exCheckbox);
         subjGrade.add(exTf);
@@ -302,11 +187,10 @@ public class Window extends JFrame {
      * Creates text field for grade
      *
      * @param subj the subject
-     * @param ind the index of subject
-     * @param subjAvg the average grade of the subject
+     * @param ind  the index of subject
      * @return text field for grade
      */
-    private JTextField addGradeTf(Subject subj, int ind, JLabel subjAvg) {
+    private JTextField addGradeTf(Subject subj, int ind) {
         JTextField tf = new JTextField();
         tf.setEditable(false);
         if (subj.getGrades().get(ind) != null)
@@ -314,50 +198,8 @@ public class Window extends JFrame {
         tf.setPreferredSize(new Dimension(30, 30));
         tf.setMaximumSize(tf.getPreferredSize());
         tf.setMinimumSize(tf.getPreferredSize());
-        makeTfForGrades(tf);
-        tf.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                warn();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                warn();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                warn();
-            }
-
-            public void warn() {
-                if (tf.getText().length() > 0 && tf.getText() != null)
-                    subj.setGrade(ind, Integer.parseInt(tf.getText()));
-                else
-                    subj.setGrade(ind, 0);
-                if (!subj.isExam())
-                    subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgGrade()));
-                else
-                    subjAvg.setText("" + new DecimalFormat("#0.00").format(subj.avgExGrade()));
-                globalGradeLabel.setText("GPA: " + new DecimalFormat("#0.00").format(globalGrade(subjects)));
-            }
-        });
 
         return tf;
-    }
-
-    private void makeTfForGrades(JTextField tf) {
-        tf.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                try {
-                    if (Byte.parseByte(tf.getText() + e.getKeyChar()) > 10) e.consume();
-                } catch (Exception ex) {
-                    e.consume();
-                }
-            }
-        });
     }
 
     private float globalGrade(List<Subject> subjects) {

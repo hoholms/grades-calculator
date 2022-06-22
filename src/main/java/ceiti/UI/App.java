@@ -12,16 +12,12 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 
-public class App
-{
-    private final int SCREEN_WIDTH = 500;
-    private final int SCREEN_HEIGHT = 80;
+public class App {
     private final JFrame frame;
     private JTextField textField;
-    private JLabel inputLabel;
     private JButton searchButton;
 
-    public App(){
+    public App() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {
@@ -29,6 +25,8 @@ public class App
         }
 
         frame = new JFrame();
+        int SCREEN_WIDTH = 500;
+        int SCREEN_HEIGHT = 80;
         frame.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         frame.add(createInputPanel());
 
@@ -43,7 +41,7 @@ public class App
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    private JPanel createInputPanel(){
+    private JPanel createInputPanel() {
         final JPanel inputPanel = new JPanel();
         textField = new JTextField(13);
 
@@ -86,7 +84,7 @@ public class App
             }
         });
 
-        inputLabel = new JLabel("Enter an INDP (13 digits): ");
+        JLabel inputLabel = new JLabel("Enter an INDP (13 digits): ");
 
         inputPanel.add(inputLabel);
         inputPanel.add(textField);
