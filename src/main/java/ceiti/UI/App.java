@@ -35,6 +35,9 @@ public class App
         frame.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
         frame.add(createInputPanel());
 
+        ImageIcon logo = new ImageIcon("src/main/resources/img/logo.png");
+        frame.setIconImage(logo.getImage());
+
         frame.setTitle("CEITI average grade scraper");
         frame.pack();
         frame.setLocationRelativeTo(null);
