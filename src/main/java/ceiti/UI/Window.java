@@ -10,11 +10,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Class Window creates a new window and sets the content in it.
@@ -46,7 +43,7 @@ public class Window extends JFrame {
                 el.getNameSub().equals("Nemotivate") || el.getGrades().isEmpty());
 
         setTitle("Grades accounting");
-        ImageIcon logo = new ImageIcon("img/logo.png");
+        ImageIcon logo = new ImageIcon("src/main/resources/img/logo.png");
         setIconImage(logo.getImage());
         setSize(new Dimension(1000, 600));
         setMinimumSize(new Dimension(640, 480));
