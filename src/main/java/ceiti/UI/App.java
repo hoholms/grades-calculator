@@ -18,6 +18,12 @@ public class App
     private final int SCREEN_HEIGHT = 500;
     private JFrame frame;
     public App(){
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
         frame = new JFrame();
         frame.setPreferredSize(new Dimension(SCREEN_WIDTH, 80));
         frame.add(new InputPanel(this));
