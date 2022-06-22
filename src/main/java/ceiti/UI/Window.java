@@ -55,7 +55,7 @@ public class Window extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 int confirmed = JOptionPane.showConfirmDialog(null,
-                        "Exit Program", "Exit Program Message Box",
+                        "Exit Program?", "Exit Program Message Box",
                         JOptionPane.OK_CANCEL_OPTION);
 
                 if (confirmed == JOptionPane.OK_OPTION) {
