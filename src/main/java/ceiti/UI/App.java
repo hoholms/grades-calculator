@@ -101,13 +101,33 @@ public class App {
             HTTPHandler.ResponseCode code = HTTPHandler.getHTMLDocument(idnp);
             if (code == HTTPHandler.ResponseCode.SUCCESS) {
                 frame.dispose();
-                new Window(HTTPHandler.getResponseDocument());
-            } else {
-                JOptionPane.showMessageDialog(null, "An error has happened while receiving a response", "Response error", JOptionPane.PLAIN_MESSAGE);
+                new Window(HTTPHandler.getGradesDocument());
             }
+            else if (code == HTTPHandler.ResponseCode.CONNECTION_TIMEOUT){
+                JOptionPane.showMessageDialog(null,
+                        "Could not establish a connection with the server. Check your internet connection.",
+                        "Connection timeout",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            else if (code == HTTPHandler.ResponseCode.CALL_TIMEOUT){
+                JOptionPane.showMessageDialog(null,
+                        "Could not receive a response from the server. The server might be down.",
+                        "Response timeout",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+            else if (code == HTTPHandler.ResponseCode.WRONG_IDNP){
+                    JOptionPane.showMessageDialog(null,
+                            "IDNP has not been found in the server database. Check if misspelled",
+                            "IDNP not found",
+                            JOptionPane.ERROR_MESSAGE);
+            }
+
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "An error has happened while sending a request", "Request error", JOptionPane.PLAIN_MESSAGE);
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "An error has happened while sending a request. Consider reporting a bug",
+                    "Unexpected error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }
