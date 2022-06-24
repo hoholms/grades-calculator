@@ -16,7 +16,6 @@ public class App {
     private static ButtonGroup semButtonGroup;
     private final JFrame frame;
     private JTextField textField;
-    private JRadioButton sem1, sem2;
     private JButton searchButton;
 
     public App() {
@@ -53,9 +52,9 @@ public class App {
                 semesterPanel = new JPanel();
         textField = new JTextField(13);
 
-        sem1 = new JRadioButton("I");
+        JRadioButton sem1 = new JRadioButton("I");
         sem1.setActionCommand("headin3g1");
-        sem2 = new JRadioButton("II");
+        JRadioButton sem2 = new JRadioButton("II");
         sem2.setActionCommand("headin3g2");
         semButtonGroup = new ButtonGroup();
         semButtonGroup.add(sem1);
