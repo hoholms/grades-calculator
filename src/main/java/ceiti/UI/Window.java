@@ -7,10 +7,13 @@ import org.jsoup.nodes.Document;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.util.List;
+
+import static ceiti.UI.App.getSemester;
 
 /**
  * Class Window creates a new window and sets the content in it.
@@ -36,7 +39,7 @@ public class Window extends JFrame {
             System.out.println(ex.getMessage());
         }
 
-        subjects = HTMLParser.parseSubjects(document, -1);
+        subjects = HTMLParser.parseSubjects(document, getSemester());
         subjects.removeIf(el -> el.getNameSub().equals("Bolnav") ||
                 el.getNameSub().equals("Motivate") ||
                 el.getNameSub().equals("Nemotivate") || el.getGrades().isEmpty());
@@ -164,14 +167,21 @@ public class Window extends JFrame {
         if (subj.isExam()) {
             exTf.setText("" + subj.getExGrade());
         } else {
-            if (subj.getExGrade() != null && subj.getExGrade() != 0) {
+            if (subj.getExGrade() != 0) {
                 exTf.setText("" + subj.getExGrade());
             }
         }
         exTf.setPreferredSize(new Dimension(30, 30));
 
         JCheckBox exCheckbox = new JCheckBox();
-        exCheckbox.setEnabled(false);
+        exCheckbox.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                exCheckbox.setSelected(!e.equals("0"));
+            }
+        });
+        if (!subj.isExam())
+            exCheckbox.setEnabled(false);
         exCheckbox.setText("Exam: ");
         if (subj.isExam())
             exCheckbox.setSelected(true);

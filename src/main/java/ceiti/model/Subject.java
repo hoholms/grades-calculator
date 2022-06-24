@@ -15,7 +15,7 @@ public class Subject implements Serializable {
     private String nameSub;
     private List<Integer> grades;
     private boolean exam;
-    private Integer exGrade;
+    private int exGrade;
 
     /**
      * Instantiates a new Subject.
@@ -27,6 +27,13 @@ public class Subject implements Serializable {
         this.nameSub = nameSub;
         this.grades = grades;
         this.exam = false;
+    }
+
+    public Subject(String nameSub, List<Integer> grades, int exGrade) {
+        this.nameSub = nameSub;
+        this.grades = grades;
+        this.exam = true;
+        this.exGrade = exGrade;
     }
 
     /**
@@ -144,7 +151,7 @@ public class Subject implements Serializable {
      *
      * @return the ex grade
      */
-    public Integer getExGrade() {
+    public int getExGrade() {
         return exGrade;
     }
 
@@ -153,7 +160,7 @@ public class Subject implements Serializable {
      *
      * @param exGrade the ex grade
      */
-    public void setExGrade(Integer exGrade) {
+    public void setExGrade(int exGrade) {
         setExam(true);
         this.exGrade = exGrade;
     }

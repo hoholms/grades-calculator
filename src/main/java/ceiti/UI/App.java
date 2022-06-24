@@ -13,8 +13,10 @@ import java.io.IOException;
 
 
 public class App {
+    private static ButtonGroup semButtonGroup;
     private final JFrame frame;
     private JTextField textField;
+    private JRadioButton sem1, sem2;
     private JButton searchButton;
 
     public App() {
@@ -25,9 +27,9 @@ public class App {
         }
 
         frame = new JFrame();
-        int SCREEN_WIDTH = 500;
+        /*int SCREEN_WIDTH = 500;
         int SCREEN_HEIGHT = 80;
-        frame.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
+        frame.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));*/
         frame.add(createInputPanel());
 
         ImageIcon logo = new ImageIcon("src/main/resources/img/logo.png");
@@ -41,9 +43,25 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    public static String getSemester() {
+        return semButtonGroup.getSelection().getActionCommand();
+    }
+
     private JPanel createInputPanel() {
-        final JPanel inputPanel = new JPanel();
+        final JPanel inputPanel = new JPanel(new GridLayout(0, 1)),
+                idnpPanel = new JPanel(),
+                semesterPanel = new JPanel();
         textField = new JTextField(13);
+
+        sem1 = new JRadioButton("I");
+        sem1.setActionCommand("headin3g1");
+        sem2 = new JRadioButton("II");
+        sem2.setActionCommand("headin3g2");
+        semButtonGroup = new ButtonGroup();
+        semButtonGroup.add(sem1);
+        semButtonGroup.add(sem2);
+        semButtonGroup.clearSelection();
+        sem1.setSelected(true);
 
         searchButton = new JButton();
         searchButton.setEnabled(false);
@@ -84,15 +102,22 @@ public class App {
             }
         });
 
-        JLabel inputLabel = new JLabel("Enter an INDP (13 digits): ");
+        JLabel inputLabel = new JLabel("Enter an INDP (13 digits):");
+        JLabel semesterLabel = new JLabel("Choose semester:");
 
-        inputPanel.add(inputLabel);
-        inputPanel.add(textField);
-        inputPanel.add(searchButton);
+        idnpPanel.add(inputLabel);
+        idnpPanel.add(textField);
+        idnpPanel.add(searchButton);
+
+        semesterPanel.add(semesterLabel);
+        semesterPanel.add(sem1);
+        semesterPanel.add(sem2);
+
+        inputPanel.add(idnpPanel);
+        inputPanel.add(semesterPanel);
 
         return inputPanel;
     }
-
 
     public void onInputButtonClick(ActionEvent e) {
         String idnp = textField.getText();
@@ -102,24 +127,21 @@ public class App {
             if (code == HTTPHandler.ResponseCode.SUCCESS) {
                 frame.dispose();
                 new Window(HTTPHandler.getGradesDocument());
-            }
-            else if (code == HTTPHandler.ResponseCode.CONNECTION_TIMEOUT){
+            } else if (code == HTTPHandler.ResponseCode.CONNECTION_TIMEOUT) {
                 JOptionPane.showMessageDialog(null,
                         "Could not establish a connection with the server. Check your internet connection.",
                         "Connection timeout",
                         JOptionPane.ERROR_MESSAGE);
-            }
-            else if (code == HTTPHandler.ResponseCode.CALL_TIMEOUT){
+            } else if (code == HTTPHandler.ResponseCode.CALL_TIMEOUT) {
                 JOptionPane.showMessageDialog(null,
                         "Could not receive a response from the server. The server might be down.",
                         "Response timeout",
                         JOptionPane.ERROR_MESSAGE);
-            }
-            else if (code == HTTPHandler.ResponseCode.WRONG_IDNP){
-                    JOptionPane.showMessageDialog(null,
-                            "IDNP has not been found in the server database. Check if misspelled",
-                            "IDNP not found",
-                            JOptionPane.ERROR_MESSAGE);
+            } else if (code == HTTPHandler.ResponseCode.WRONG_IDNP) {
+                JOptionPane.showMessageDialog(null,
+                        "IDNP has not been found in the server database. Check if misspelled",
+                        "IDNP not found",
+                        JOptionPane.ERROR_MESSAGE);
             }
 
         } catch (IOException ex) {
