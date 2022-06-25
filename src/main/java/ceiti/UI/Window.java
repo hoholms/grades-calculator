@@ -133,7 +133,8 @@ public class Window extends JFrame {
      * @return the name panel
      */
     private JPanel setSubjNamePanel(Subject subj) {
-        JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel namePanel = new JPanel();
+        namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
 
         JLabel nameLabel = new JLabel(subj.getNameSub());
         nameLabel.setFont(new Font(Font.DIALOG_INPUT, Font.BOLD, 12));
@@ -152,6 +153,7 @@ public class Window extends JFrame {
      */
     private JPanel setSubjGlobalGradePanel(Subject subj, JLabel subjAvg) {
         JPanel subjGrade = new JPanel();
+        subjGrade.setLayout(new BoxLayout(subjGrade, BoxLayout.X_AXIS));
         subjGrade.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 
         if (!subj.isExam())
@@ -172,6 +174,7 @@ public class Window extends JFrame {
             }
         }
         exTf.setPreferredSize(new Dimension(30, 30));
+        exTf.setMaximumSize(exTf.getPreferredSize());
 
         JCheckBox exCheckbox = new JCheckBox();
         exCheckbox.addActionListener(new AbstractAction() {
@@ -188,6 +191,7 @@ public class Window extends JFrame {
 
         subjGrade.add(exCheckbox);
         subjGrade.add(exTf);
+        subjGrade.add(Box.createHorizontalStrut(10));
         subjGrade.add(subjAvg);
 
         return subjGrade;
